@@ -5,6 +5,7 @@
 #### ---------------------------------------------
 #### Benjamin Cane - 04/29/2013
 
+## Import modules
 import sys, getopt, os
 from shutil import copy2
 from subprocess import call
@@ -30,6 +31,7 @@ def main(argv):
             gzip = 1
     return retention, gzip, args 
 
+## Define a custom copy function to not repeat tasks
 def myCopy(oldfile, newfile, gzip):
     if os.path.isfile(oldfile):
         print("%s -> %s") % (oldfile, newfile)
@@ -42,17 +44,22 @@ def myCopy(oldfile, newfile, gzip):
     else:
         print("%s does not exist") % oldfile
 
-
+## Initialize
 if __name__ == "__main__":
     global vars
     ret, gzip, args = main(sys.argv[1:])
 
+## For each file
 for file in args:
+    ## Only run if file exists
     if os.path.isfile(file):
+        ## Determin Number of files to keep
         numbers = range(1,ret)
+        ## Oldest to Newest
         numbers.sort(reverse=True)
         for number in numbers:
             filenum = number - 1
+            ## Add .gz extention
             if gzip == 1:
                 newfile = file + "." + str(number) + ".gz"
                 oldfile = file + "." + str(filenum) + ".gz"
@@ -60,8 +67,10 @@ for file in args:
                 newfile = file + "." + str(number)
                 oldfile = file + "." + str(filenum)
             myCopy(oldfile, newfile, 0)
+        ## Copy
         newfile = file + "." + str("0")
         myCopy(file, newfile, gzip)
+        ## Truncate
         fh = open(file, "w")
         fh.close()
     else:
